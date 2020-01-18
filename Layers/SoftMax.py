@@ -1,8 +1,11 @@
 import numpy as np
+from Layers.Base import Base
 
-class SoftMax:
+
+class SoftMax(Base):
 
     def __init__(self):
+        super().__init__()
         self.estimated_class_pro = None
 
     def forward(self, input_tensor):

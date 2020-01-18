@@ -1,8 +1,11 @@
 import numpy as np
+from Layers.Base import Base
 
-class ReLU:
+
+class ReLU(Base):
 
     def __init__(self):
+        super().__init__()
         self.input_tensor = None
 
     def forward(self, input_tensor):

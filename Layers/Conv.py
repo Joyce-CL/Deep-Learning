@@ -2,10 +2,13 @@ import numpy as np
 import math
 import scipy.signal as sgl
 import copy
+from Layers.Base import Base
 
-class Conv:
+
+class Conv(Base):
 
     def __init__(self, stride_shape, convolution_shape, num_kernels):
+        super().__init__()
         # if stride_shape is a value, it means the kernel shifts the same step in horizontal & vertical direction
         # generalization stride_shape in form (a, b)
         # a: represent the stride in horizontal direction, b: represent the stride in vertical direction
@@ -32,12 +35,22 @@ class Conv:
         self.weights = np.random.rand(self.H, self.C, self.M, self.N)
         self.bias = np.random.rand(self.H, 1)
 
+    # calculate sum of weights in each layer for regularization
+    @property
+    def regularizer_loss(self):
+        sum_weight = 0
+        if self._optimizer is not None:
+            if self._optimizer.regularizer is not None:
+                sum_weight = self._optimizer.regularizer.norm(self.weights)
+        return sum_weight
+
     # two properties
     def get_gradient_weights(self):
         return self._gradient_weights
 
     def set_gradient_weights(self, gradient_weights):
         self._gradient_weights = gradient_weights
+
     gradient_weights = property(get_gradient_weights, set_gradient_weights)
 
     def get_gradient_bias(self):

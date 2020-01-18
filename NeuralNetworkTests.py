@@ -1,6 +1,6 @@
 import unittest
-from Layers import Conv, Flatten, FullyConnected, Helpers, Initializers, Pooling, ReLU, SoftMax
-from Optimization import Loss, Optimizers
+from Layers import Conv, Flatten, FullyConnected, Helpers, Initializers, Pooling, ReLU, SoftMax, Base
+from Optimization import *
 import numpy as np
 from scipy import stats
 from scipy.ndimage.filters import gaussian_filter
@@ -68,6 +68,7 @@ class TestFullyConnected(unittest.TestCase):
         layer = FullyConnected.FullyConnected(100000, 1)
         result = layer.forward(input_tensor)
         self.assertGreater(np.sum(result), 0)
+
 
 class TestReLU(unittest.TestCase):
     def setUp(self):
@@ -769,128 +770,128 @@ class TestPooling(unittest.TestCase):
         self.assertEqual(np.abs(np.sum(result - expected_result)), 0)
 
 
-# class TestConstraints(unittest.TestCase):
-#
-#     def setUp(self):
-#         self.delta = 0.1
-#         self.regularizer_strength = 1337
-#         self.shape = (4, 5)
-#
-#     def test_L1(self):
-#         regularizer = Constraints.L1_Regularizer(self.regularizer_strength)
-#
-#         weights_tensor = np.ones(self.shape)
-#         weights_tensor[1:3, 2:4] *= -1
-#         weights_tensor = regularizer.calculate_gradient(weights_tensor)
-#
-#         expected = np.ones(self.shape) * self.regularizer_strength
-#         expected[1:3, 2:4] *= -1
-#
-#         difference = np.sum(np.abs(weights_tensor - expected))
-#         self.assertLessEqual(difference, 1e-10)
-#
-#     def test_L1_norm(self):
-#         regularizer = Constraints.L1_Regularizer(self.regularizer_strength)
-#
-#         weights_tensor = np.ones(self.shape)
-#         weights_tensor[1:3, 2:4] *= -1
-#         norm = regularizer.norm(weights_tensor)
-#         self.assertAlmostEqual(norm, 20*self.regularizer_strength)
-#
-#     def test_L2(self):
-#         regularizer = Constraints.L2_Regularizer(self.regularizer_strength)
-#
-#         weights_tensor = np.ones(self.shape)
-#         weights_tensor = regularizer.calculate_gradient(weights_tensor)
-#
-#         difference = np.sum(np.abs(weights_tensor - np.ones(self.shape) * self.regularizer_strength))
-#         self.assertLessEqual(difference, 1e-10)
-#
-#     def test_L2_norm(self):
-#         regularizer = Constraints.L2_Regularizer(self.regularizer_strength)
-#
-#         weights_tensor = np.ones(self.shape)
-#         weights_tensor[1:3, 2:4] += 1
-#         norm = regularizer.norm(weights_tensor)
-#         self.assertAlmostEqual(norm, np.sqrt(32) * self.regularizer_strength)
-#
-#     def test_L1_with_sgd(self):
-#         weights_tensor = np.ones(self.shape)
-#         weights_tensor[1:3, 2:4] *= -1
-#
-#         optimizer = Optimizers.Sgd(2)
-#         regularizer = Constraints.L1_Regularizer(2)
-#         optimizer.add_regularizer(regularizer)
-#
-#         result = optimizer.calculate_update(weights_tensor, np.ones(self.shape)*2)
-#         result = optimizer.calculate_update(result, np.ones(self.shape) * 2)
-#
-#         np.testing.assert_almost_equal(np.sum(result), -116, 2)
-#
-#     def test_L2_with_sgd(self):
-#         weights_tensor = np.ones(self.shape)
-#         weights_tensor[1:3, 2:4] *= -1
-#
-#         optimizer = Optimizers.Sgd(2)
-#         regularizer = Constraints.L2_Regularizer(2)
-#         optimizer.add_regularizer(regularizer)
-#
-#         result = optimizer.calculate_update(weights_tensor, np.ones(self.shape)*2)
-#         result = optimizer.calculate_update(result, np.ones(self.shape) * 2)
-#
-#         np.testing.assert_almost_equal(np.sum(result), 268, 2)
-#
-#     def test_L1_with_sgd_w_momentum(self):
-#         weights_tensor = np.ones(self.shape)
-#         weights_tensor[1:3, 2:4] *= -1
-#
-#         optimizer = Optimizers.SgdWithMomentum(2,0.9)
-#         regularizer = Constraints.L1_Regularizer(2)
-#         optimizer.add_regularizer(regularizer)
-#
-#         result = optimizer.calculate_update(weights_tensor, np.ones(self.shape)*2)
-#         result = optimizer.calculate_update(result, np.ones(self.shape) * 2)
-#
-#         np.testing.assert_almost_equal(np.sum(result), -188, 1)
-#
-#     def test_L2_with_sgd_w_momentum(self):
-#         weights_tensor = np.ones(self.shape)
-#         weights_tensor[1:3, 2:4] *= -1
-#
-#         optimizer = Optimizers.SgdWithMomentum(2,0.9)
-#         regularizer = Constraints.L2_Regularizer(2)
-#         optimizer.add_regularizer(regularizer)
-#
-#         result = optimizer.calculate_update(weights_tensor, np.ones(self.shape)*2)
-#         result = optimizer.calculate_update(result, np.ones(self.shape) * 2)
-#
-#         np.testing.assert_almost_equal(np.sum(result), 196, 1)
-#
-#     def test_L1_with_adam(self):
-#         weights_tensor = np.ones(self.shape)
-#         weights_tensor[1:3, 2:4] *= -1
-#
-#         optimizer = Optimizers.Adam(2, 0.9, 0.999)
-#         regularizer = Constraints.L1_Regularizer(2)
-#         optimizer.add_regularizer(regularizer)
-#
-#         result = optimizer.calculate_update(weights_tensor, np.ones(self.shape)*2)
-#         result = optimizer.calculate_update(result, np.ones(self.shape) * 2)
-#
-#         np.testing.assert_almost_equal(np.sum(result), -68, 2)
-#
-#     def test_L2_with_adam(self):
-#         weights_tensor = np.ones(self.shape)
-#         weights_tensor[1:3, 2:4] *= -1
-#
-#         optimizer = Optimizers.Adam(2, 0.9, 0.999)
-#         regularizer = Constraints.L2_Regularizer(2)
-#         optimizer.add_regularizer(regularizer)
-#
-#         result = optimizer.calculate_update(weights_tensor, np.ones(self.shape)*2)
-#         result = optimizer.calculate_update(result, np.ones(self.shape) * 2)
-#
-#         np.testing.assert_almost_equal(np.sum(result), 188, 2)
+class TestConstraints(unittest.TestCase):
+
+    def setUp(self):
+        self.delta = 0.1
+        self.regularizer_strength = 1337
+        self.shape = (4, 5)
+
+    def test_L1(self):
+        regularizer = Constraints.L1_Regularizer(self.regularizer_strength)
+
+        weights_tensor = np.ones(self.shape)
+        weights_tensor[1:3, 2:4] *= -1
+        weights_tensor = regularizer.calculate_gradient(weights_tensor)
+
+        expected = np.ones(self.shape) * self.regularizer_strength
+        expected[1:3, 2:4] *= -1
+
+        difference = np.sum(np.abs(weights_tensor - expected))
+        self.assertLessEqual(difference, 1e-10)
+
+    def test_L1_norm(self):
+        regularizer = Constraints.L1_Regularizer(self.regularizer_strength)
+
+        weights_tensor = np.ones(self.shape)
+        weights_tensor[1:3, 2:4] *= -1
+        norm = regularizer.norm(weights_tensor)
+        self.assertAlmostEqual(norm, 20*self.regularizer_strength)
+
+    def test_L2(self):
+        regularizer = Constraints.L2_Regularizer(self.regularizer_strength)
+
+        weights_tensor = np.ones(self.shape)
+        weights_tensor = regularizer.calculate_gradient(weights_tensor)
+
+        difference = np.sum(np.abs(weights_tensor - np.ones(self.shape) * self.regularizer_strength))
+        self.assertLessEqual(difference, 1e-10)
+
+    def test_L2_norm(self):
+        regularizer = Constraints.L2_Regularizer(self.regularizer_strength)
+
+        weights_tensor = np.ones(self.shape)
+        weights_tensor[1:3, 2:4] += 1
+        norm = regularizer.norm(weights_tensor)
+        self.assertAlmostEqual(norm, np.sqrt(32) * self.regularizer_strength)
+
+    def test_L1_with_sgd(self):
+        weights_tensor = np.ones(self.shape)
+        weights_tensor[1:3, 2:4] *= -1
+
+        optimizer = Optimizers.Sgd(2)
+        regularizer = Constraints.L1_Regularizer(2)
+        optimizer.add_regularizer(regularizer)
+
+        result = optimizer.calculate_update(weights_tensor, np.ones(self.shape)*2)
+        result = optimizer.calculate_update(result, np.ones(self.shape) * 2)
+
+        np.testing.assert_almost_equal(np.sum(result), -116, 2)
+
+    def test_L2_with_sgd(self):
+        weights_tensor = np.ones(self.shape)
+        weights_tensor[1:3, 2:4] *= -1
+
+        optimizer = Optimizers.Sgd(2)
+        regularizer = Constraints.L2_Regularizer(2)
+        optimizer.add_regularizer(regularizer)
+
+        result = optimizer.calculate_update(weights_tensor, np.ones(self.shape)*2)
+        result = optimizer.calculate_update(result, np.ones(self.shape) * 2)
+
+        np.testing.assert_almost_equal(np.sum(result), 268, 2)
+
+    def test_L1_with_sgd_w_momentum(self):
+        weights_tensor = np.ones(self.shape)
+        weights_tensor[1:3, 2:4] *= -1
+
+        optimizer = Optimizers.SgdWithMomentum(2,0.9)
+        regularizer = Constraints.L1_Regularizer(2)
+        optimizer.add_regularizer(regularizer)
+
+        result = optimizer.calculate_update(weights_tensor, np.ones(self.shape)*2)
+        result = optimizer.calculate_update(result, np.ones(self.shape) * 2)
+
+        np.testing.assert_almost_equal(np.sum(result), -188, 1)
+
+    def test_L2_with_sgd_w_momentum(self):
+        weights_tensor = np.ones(self.shape)
+        weights_tensor[1:3, 2:4] *= -1
+
+        optimizer = Optimizers.SgdWithMomentum(2,0.9)
+        regularizer = Constraints.L2_Regularizer(2)
+        optimizer.add_regularizer(regularizer)
+
+        result = optimizer.calculate_update(weights_tensor, np.ones(self.shape)*2)
+        result = optimizer.calculate_update(result, np.ones(self.shape) * 2)
+
+        np.testing.assert_almost_equal(np.sum(result), 196, 1)
+
+    def test_L1_with_adam(self):
+        weights_tensor = np.ones(self.shape)
+        weights_tensor[1:3, 2:4] *= -1
+
+        optimizer = Optimizers.Adam(2, 0.9, 0.999)
+        regularizer = Constraints.L1_Regularizer(2)
+        optimizer.add_regularizer(regularizer)
+
+        result = optimizer.calculate_update(weights_tensor, np.ones(self.shape)*2)
+        result = optimizer.calculate_update(result, np.ones(self.shape) * 2)
+
+        np.testing.assert_almost_equal(np.sum(result), -68, 2)
+
+    def test_L2_with_adam(self):
+        weights_tensor = np.ones(self.shape)
+        weights_tensor[1:3, 2:4] *= -1
+
+        optimizer = Optimizers.Adam(2, 0.9, 0.999)
+        regularizer = Constraints.L2_Regularizer(2)
+        optimizer.add_regularizer(regularizer)
+
+        result = optimizer.calculate_update(weights_tensor, np.ones(self.shape)*2)
+        result = optimizer.calculate_update(result, np.ones(self.shape) * 2)
+
+        np.testing.assert_almost_equal(np.sum(result), 188, 2)
 #
 #
 # class TestDropout(unittest.TestCase):
@@ -1491,7 +1492,7 @@ class TestPooling(unittest.TestCase):
 #         with open(self.log, 'a') as f:
 #             print('On the Iris dataset using Dropout, we achieve an accuracy of: ' + str(accuracy * 100.) + '%', file=f)
 #         self.assertEqual(np.mean(np.square(results - results_next_run)), 0)
-#
+
 #
 # class TestConvNet(unittest.TestCase):
 #     plot = False

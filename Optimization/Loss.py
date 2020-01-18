@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class CrossEntropyLoss:
 
     def __init__(self):

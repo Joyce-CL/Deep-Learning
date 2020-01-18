@@ -1,8 +1,10 @@
 import numpy as np
+from Layers.Base import Base
 
 
-class Constant:
+class Constant(Base):
     def __init__(self, constant):
+        super().__init__()
         self.weight_initialization = constant
 
     def initialize(self, weights_shape, fan_in, fan_out):
