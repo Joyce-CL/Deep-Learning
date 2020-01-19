@@ -16,8 +16,8 @@ class BatchNormalization(Base):
         # self.bias = []
         self.mean = np.zeros((1, self.channels))
         self.var = np.zeros((1, self.channels))
-        self.test_mean = np.zeros((1, self.channels))
-        self.test_var = np.zeros((1, self.channels))
+        self.test_mean = None
+        self.test_var = None
         self.decay = 0.8
         self.input_tensor = None
         self.input_shape = None
@@ -46,18 +46,18 @@ class BatchNormalization(Base):
             self.input_tensor = input_tensor
             self.flag = "vector"
 
-        mean = np.mean(self.input_tensor, axis=0)
-        var = np.var(self.input_tensor, axis=0)
-        self.mean = mean
-        self.var = var
-
-        # for test (moving average estimation of training set mean and variance)
-        self.test_mean = self.decay * self.test_mean + (1 - self.decay) * mean
-        self.test_var = self.decay * self.test_var + (1 - self.decay) * var
+        self.mean = np.mean(self.input_tensor, axis=0)
+        self.var = np.var(self.input_tensor, axis=0)
 
         # for training
         if self.phase == "train":
-            input_tensor_norm = np.divide((self.input_tensor - mean), np.sqrt(var + np.finfo(float).eps))
+            input_tensor_norm = np.divide((self.input_tensor - self.mean), np.sqrt(self.var + np.finfo(float).eps))
+            # for test (moving average estimation of training set mean and variance)
+            if self.test_mean is None and self.test_var is None:
+                self.test_mean = self.mean
+                self.test_var = self.var
+            self.test_mean = self.decay * self.test_mean + (1 - self.decay) * self.mean
+            self.test_var = self.decay * self.test_var + (1 - self.decay) * self.var
         else:
             input_tensor_norm = np.divide((self.input_tensor - self.test_mean), np.sqrt(self.test_var + np.finfo(float).eps))
 
