@@ -4,6 +4,7 @@ from Layers.Base import Base
 class Flatten(Base):
     def __init__(self):
         self.input_tensor_shape = None
+        self.weights = None
 
     def forward(self, input_tensor):
         # reshape input_tensor from eg:(9, 3, 4, 11) to (9, 3*4*11) for FNN forward input
