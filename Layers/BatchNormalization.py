@@ -133,3 +133,13 @@ class BatchNormalization(Base):
         self.bias_optimizer = copy.deepcopy(self._optimizer)
 
     optimizer = property(get_optimizer, set_optimizer)
+
+    # calculate sum of weights in each layer for regularization
+    @property
+    def regularizer_loss(self):
+        delete_bias_weight = np.delete(self.weights, -1, 1)
+        sum_weight = 0
+        if self._optimizer is not None:
+            if self._optimizer.regularizer is not None:
+                sum_weight = self._optimizer.regularizer.norm(delete_bias_weight)
+        return sum_weight

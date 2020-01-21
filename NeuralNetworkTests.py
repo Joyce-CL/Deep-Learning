@@ -1497,107 +1497,107 @@ class TestNeuralNetwork(unittest.TestCase):
         self.assertEqual(np.mean(np.square(results - results_next_run)), 0)
 
 
-# class TestConvNet(unittest.TestCase):
-#     plot = False
-#     directory = 'plots/'
-#     log = 'log.txt'
-#     iterations = 100
-#
-#     def test_digit_data(self):
-#         adam = Optimizers.Adam(5e-3, 0.98, 0.999)
-#         self._perform_test(adam, TestConvNet.iterations, 'ADAM', False, False)
-#
-#     def test_digit_data_L2_Regularizer(self):
-#         sgd_with_l2 = Optimizers.Adam(5e-3, 0.98, 0.999)
-#         sgd_with_l2.add_regularizer(Constraints.L2_Regularizer(8e-2))
-#         self._perform_test(sgd_with_l2, TestConvNet.iterations, 'L2_regularizer', False, False)
-#
-#     def test_digit_data_L1_Regularizer(self):
-#         sgd_with_l1 = Optimizers.Adam(5e-3, 0.98, 0.999)
-#         sgd_with_l1.add_regularizer(Constraints.L1_Regularizer(8e-2))
-#         self._perform_test(sgd_with_l1, TestConvNet.iterations, 'L1_regularizer', False, False)
-#
-#     def test_digit_data_dropout(self):
-#         sgd_with_l2 = Optimizers.Adam(5e-3, 0.98, 0.999)
-#         sgd_with_l2.add_regularizer(Constraints.L2_Regularizer(4e-4))
-#         self._perform_test(sgd_with_l2, TestConvNet.iterations, 'Dropout', True, False)
-#
-#     def test_digit_batch_norm(self):
-#         adam = Optimizers.Adam(1e-2, 0.98, 0.999)
-#         self._perform_test(adam, TestConvNet.iterations, 'Batch_norm', False, True)
-#
-#     def test_all(self):
-#         sgd_with_l2 = Optimizers.Adam(1e-2, 0.98, 0.999)
-#         sgd_with_l2.add_regularizer(Constraints.L2_Regularizer(8e-2))
-#         self._perform_test(sgd_with_l2, TestConvNet.iterations, 'Batch_norm and L2', False, True)
-#
-#     def _perform_test(self, optimizer, iterations, description, dropout, batch_norm):
-#         net = NeuralNetwork.NeuralNetwork(optimizer,
-#                                           Initializers.He(),
-#                                           Initializers.Constant(0.1))
-#         input_image_shape = (1, 8, 8)
-#         conv_stride_shape = (1, 1)
-#         convolution_shape = (1, 3, 3)
-#         categories = 10
-#         batch_size = 150
-#         num_kernels = 4
-#
-#         net.data_layer = Helpers.DigitData(batch_size)
-#         net.loss_layer = Loss.CrossEntropyLoss()
-#
-#         if batch_norm:
-#             net.append_trainable_layer(BatchNormalization.BatchNormalization(1))
-#
-#         cl_1 = Conv.Conv(conv_stride_shape, convolution_shape, num_kernels)
-#         net.append_trainable_layer(cl_1)
-#         cl_1_output_shape = (num_kernels, *input_image_shape[1:])
-#
-#         if batch_norm:
-#             net.append_trainable_layer(BatchNormalization.BatchNormalization(num_kernels))
-#
-#         net.layers.append(ReLU.ReLU())
-#
-#         fcl_1_input_size = np.prod(cl_1_output_shape)
-#
-#         net.layers.append(Flatten.Flatten())
-#
-#         fcl_1 = FullyConnected.FullyConnected(fcl_1_input_size, np.int(fcl_1_input_size/2.))
-#         net.append_trainable_layer(fcl_1)
-#
-#         if batch_norm:
-#             net.append_trainable_layer(BatchNormalization.BatchNormalization(fcl_1_input_size//2))
-#
-#         if dropout:
-#             net.layers.append(Dropout.Dropout(0.3))
-#
-#         net.layers.append(ReLU.ReLU())
-#
-#         fcl_2 = FullyConnected.FullyConnected(np.int(fcl_1_input_size / 2), np.int(fcl_1_input_size / 3))
-#         net.append_trainable_layer(fcl_2)
-#
-#         net.layers.append(ReLU.ReLU())
-#
-#         fcl_3 = FullyConnected.FullyConnected(np.int(fcl_1_input_size / 3), categories)
-#         net.append_trainable_layer(fcl_3)
-#
-#         net.layers.append(SoftMax.SoftMax())
-#
-#         net.train(iterations)
-#         if TestConvNet.plot:
-#             fig = plt.figure('Loss function for training a Convnet on the Digit dataset ' + description)
-#             plt.plot(net.loss, '-x')
-#             plt.ylim(ymin=0, ymax=450)
-#             fig.savefig(os.path.join(self.directory, "TestConvNet_" + description + ".pdf"), transparent=True, bbox_inches='tight', pad_inches=0)
-#
-#         data, labels = net.data_layer.get_test_set()
-#
-#         results = net.test(data)
-#
-#         accuracy = Helpers.calculate_accuracy(results, labels)
-#         with open(self.log, 'a') as f:
-#             print('On the UCI ML hand-written digits dataset using {} we achieve an accuracy of: {}%'.format(description, accuracy * 100.), file=f)
-#         print('\nOn the UCI ML hand-written digits dataset using {} we achieve an accuracy of: {}%'.format(description, accuracy * 100.))
-#         self.assertGreater(accuracy, 0.3)
+class TestConvNet(unittest.TestCase):
+    plot = False
+    directory = 'plots/'
+    log = 'log.txt'
+    iterations = 100
+
+    def test_digit_data(self):
+        adam = Optimizers.Adam(5e-3, 0.98, 0.999)
+        self._perform_test(adam, TestConvNet.iterations, 'ADAM', False, False)
+
+    def test_digit_data_L2_Regularizer(self):
+        sgd_with_l2 = Optimizers.Adam(5e-3, 0.98, 0.999)
+        sgd_with_l2.add_regularizer(Constraints.L2_Regularizer(8e-2))
+        self._perform_test(sgd_with_l2, TestConvNet.iterations, 'L2_regularizer', False, False)
+
+    def test_digit_data_L1_Regularizer(self):
+        sgd_with_l1 = Optimizers.Adam(5e-3, 0.98, 0.999)
+        sgd_with_l1.add_regularizer(Constraints.L1_Regularizer(8e-2))
+        self._perform_test(sgd_with_l1, TestConvNet.iterations, 'L1_regularizer', False, False)
+
+    def test_digit_data_dropout(self):
+        sgd_with_l2 = Optimizers.Adam(5e-3, 0.98, 0.999)
+        sgd_with_l2.add_regularizer(Constraints.L2_Regularizer(4e-4))
+        self._perform_test(sgd_with_l2, TestConvNet.iterations, 'Dropout', True, False)
+
+    def test_digit_batch_norm(self):
+        adam = Optimizers.Adam(1e-2, 0.98, 0.999)
+        self._perform_test(adam, TestConvNet.iterations, 'Batch_norm', False, True)
+
+    def test_all(self):
+        sgd_with_l2 = Optimizers.Adam(1e-2, 0.98, 0.999)
+        sgd_with_l2.add_regularizer(Constraints.L2_Regularizer(8e-2))
+        self._perform_test(sgd_with_l2, TestConvNet.iterations, 'Batch_norm and L2', False, True)
+
+    def _perform_test(self, optimizer, iterations, description, dropout, batch_norm):
+        net = NeuralNetwork.NeuralNetwork(optimizer,
+                                          Initializers.He(),
+                                          Initializers.Constant(0.1))
+        input_image_shape = (1, 8, 8)
+        conv_stride_shape = (1, 1)
+        convolution_shape = (1, 3, 3)
+        categories = 10
+        batch_size = 150
+        num_kernels = 4
+
+        net.data_layer = Helpers.DigitData(batch_size)
+        net.loss_layer = Loss.CrossEntropyLoss()
+
+        if batch_norm:
+            net.append_trainable_layer(BatchNormalization.BatchNormalization(1))
+
+        cl_1 = Conv.Conv(conv_stride_shape, convolution_shape, num_kernels)
+        net.append_trainable_layer(cl_1)
+        cl_1_output_shape = (num_kernels, *input_image_shape[1:])
+
+        if batch_norm:
+            net.append_trainable_layer(BatchNormalization.BatchNormalization(num_kernels))
+
+        net.layers.append(ReLU.ReLU())
+
+        fcl_1_input_size = np.prod(cl_1_output_shape)
+
+        net.layers.append(Flatten.Flatten())
+
+        fcl_1 = FullyConnected.FullyConnected(fcl_1_input_size, np.int(fcl_1_input_size/2.))
+        net.append_trainable_layer(fcl_1)
+
+        if batch_norm:
+            net.append_trainable_layer(BatchNormalization.BatchNormalization(fcl_1_input_size//2))
+
+        if dropout:
+            net.layers.append(Dropout.Dropout(0.3))
+
+        net.layers.append(ReLU.ReLU())
+
+        fcl_2 = FullyConnected.FullyConnected(np.int(fcl_1_input_size / 2), np.int(fcl_1_input_size / 3))
+        net.append_trainable_layer(fcl_2)
+
+        net.layers.append(ReLU.ReLU())
+
+        fcl_3 = FullyConnected.FullyConnected(np.int(fcl_1_input_size / 3), categories)
+        net.append_trainable_layer(fcl_3)
+
+        net.layers.append(SoftMax.SoftMax())
+
+        net.train(iterations)
+        if TestConvNet.plot:
+            fig = plt.figure('Loss function for training a Convnet on the Digit dataset ' + description)
+            plt.plot(net.loss, '-x')
+            plt.ylim(ymin=0, ymax=450)
+            fig.savefig(os.path.join(self.directory, "TestConvNet_" + description + ".pdf"), transparent=True, bbox_inches='tight', pad_inches=0)
+
+        data, labels = net.data_layer.get_test_set()
+
+        results = net.test(data)
+
+        accuracy = Helpers.calculate_accuracy(results, labels)
+        with open(self.log, 'a') as f:
+            print('On the UCI ML hand-written digits dataset using {} we achieve an accuracy of: {}%'.format(description, accuracy * 100.), file=f)
+        print('\nOn the UCI ML hand-written digits dataset using {} we achieve an accuracy of: {}%'.format(description, accuracy * 100.))
+        self.assertGreater(accuracy, 0.3)
 
 
 class L2Loss:

@@ -65,6 +65,7 @@ class NeuralNetwork:
             loss = self.forward()
             self.loss.append(loss)
             self.backward()
+            #print("current step:", i)
 
     def test(self, input_tensor):
         self.phase = "test"
